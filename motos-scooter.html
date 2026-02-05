@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Motos Scooter | Vitrine Honda</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <!-- ...existing header/menu markup... -->
+
+  <div class="header top-hero">
+    <!-- ...existing hero/picture... -->
+    <div class="hero-text">
+      <h1>Scooters Honda</h1>
+      <p>Veja todos os modelos scooter disponíveis.</p>
+    </div>
+  </div>
+
+  <!-- ...existing search bar if desejado... -->
+
+  <div class="floating-categories">
+    <div class="floating-category" data-category="alta"><span>Alta</span></div>
+    <div class="floating-category" data-category="media"><span>Média</span></div>
+    <div class="floating-category active" data-category="scooter"><span>Scooter</span></div>
+  </div>
+
+  <div class="grid" id="products"></div>
+
+  <script>
+    window.CATEGORIA_ATUAL = "scooter";
+  </script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/carousel-enhanced.js"></script>
+  <script src="js/theme-toggle.js"></script>
+</body>
+</html>

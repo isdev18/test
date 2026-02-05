@@ -1,0 +1,223 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vitrine Honda</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+<!-- SPLASH SCREEN -->
+<div id="splash">
+    <div class="splash-overlay" aria-hidden="true"></div>
+    <div class="splash-content">
+        <div class="splash-logo">Vitrine Honda</div>
+        <h2>Ronaldhonda</h2>
+        <p>Líder em vendas!</p>
+        <div class="honda-loader">
+            <img src="moto-loader.png" alt="Moto Honda" class="moto-andando-loader">
+        </div>
+    </div>
+</div>
+
+<!-- MENU HAMBÚRGUER -->
+<header>
+    <div class="menu-btn" id="menuBtn" style="background:transparent!important;background-color:transparent!important;box-shadow:none!important;border:none!important;outline:none!important;display:flex;align-items:center;gap:8px;">
+        <span>☰</span>
+    </div>
+
+    <nav class="menu" id="menu">
+        <a href='/'>Home</a>
+        <a href="https://www.honda.com.br/motos/modelos">Modelos</a>
+        <a href="#">Promoções</a>
+        <a href="https://api.whatsapp.com/send?phone=5575998646978">Contato</a>
+        <a href="login.html">Login ADM</a>
+     
+    </nav>
+</header>
+
+<!-- CABEÇALHO / HERO -->
+<div class="header top-hero">
+    <div class="hero-image" aria-hidden="false">
+
+        <picture>
+            <!-- DESKTOP -->
+            <source srcset="css/imgDeskctop.png" media="(min-width: 1024px)">
+
+            <!-- MOBILE (fallback) -->
+            <img src="css/IMGRonald.jpeg"
+                 alt="Foto do vendedor Ronaldhonda"
+                 class="hero-img">
+        </picture>
+
+    </div>
+
+    <div class="hero-text">
+        <h1>Vitrine Honda</h1>
+        <p>Ronaldhonda — O Brabo das Vendas!</p>
+    </div>
+</div>
+
+
+
+
+<!-- BUSCA -->
+<div class="search-bar">
+    <div class="search-box">
+        <i class="fas fa-motorcycle"></i>
+        <input type="text" id="searchInput" placeholder="Pesquisar motos...">
+    </div>
+</div>
+
+<!-- CATEGORIAS FLUTUANTES COM SUBCATEGORIAS -->
+<div class="floating-categories">
+    <!-- STREET -->
+    <div class="floating-category" data-category="street">
+        <span class="floating-svg-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="currentColor"><path d="M428-520h-70 150-80ZM200-200q-83 0-141.5-58.5T0-400q0-83 58.5-141.5T200-600h464l-80-80H440v-80h143q16 0 30.5 6t25.5 17l139 139q78 6 130 63t52 135q0 83-58.5 141.5T760-200q-83 0-141.5-58.5T560-400q0-18 2.5-35.5T572-470L462-360h-66q-14 70-69 115t-127 45Zm560-80q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35Zm-560 0q38 0 68.5-22t43.5-58H200v-80h112q-13-36-43.5-58T200-520q-50 0-85 35t-35 85q0 50 35 85t85 35Zm198-160h30l80-80H358q15 17 25 37t15 43Z"/></svg>
+        </span>
+        <span>Street</span>
+        <!-- Dropdown subcategorias -->
+        <div class="subcat-dropdown">
+            <button class="subcat-btn" data-subcategory="city">City</button>
+            <button class="subcat-btn" data-subcategory="scooter">Scooter</button>
+            <button class="subcat-btn" data-subcategory="naked">Naked</button>
+        </div>
+    </div>
+    
+    <!-- ADVENTURE -->
+    <div class="floating-category" data-category="adventure">
+        <span class="floating-svg-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="currentColor"><path d="M160-200q-66 0-113-47T0-360q0-57 36.5-101t93.5-55l-28-24H0v-60h180l100 60 160-60h126l-62-80H400v-80h142l84 108 134-68v120h-92l70 92q15-6 30.5-9t31.5-3q66 0 113 47t47 113q0 66-47 113t-113 47q-66 0-113-47t-47-113q0-27 9.5-52.5T676-460l-20-24-136 204H400l-80-70q-5 63-51 106.5T160-200Zm0-80q33 0 56.5-23.5T240-360q0-33-23.5-56.5T160-440q-33 0-56.5 23.5T80-360q0 33 23.5 56.5T160-280Zm294-240-144 54 144-54h130-130Zm346 240q33 0 56.5-23.5T880-360q0-33-23.5-56.5T800-440q-33 0-56.5 23.5T720-360q0 33 23.5 56.5T800-280Zm-322-80 106-160H454l-144 54 120 106h48Z"/></svg>
+        </span>
+        <span>Adventure</span>
+        <div class="subcat-dropdown">
+            <button class="subcat-btn" data-subcategory="trail">Trail</button>
+            <button class="subcat-btn" data-subcategory="crossover">Crossover</button>
+            <button class="subcat-btn" data-subcategory="bigtrail">Big Trail</button>
+            <button class="subcat-btn" data-subcategory="scooter-adv">Scooter</button>
+        </div>
+    </div>
+    
+    <!-- OFF ROAD -->
+    <div class="floating-category" data-category="offroad">
+        <span class="floating-svg-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="currentColor"><path d="M160-200q-66 0-113-47T0-360q0-57 36.5-101t93.5-55l-28-24H0v-60h180l100 60 160-60h126l-62-80H400v-80h142l84 108 134-68v120h-92l70 92q15-6 30.5-9t31.5-3q66 0 113 47t47 113q0 66-47 113t-113 47q-66 0-113-47t-47-113q0-27 9.5-52.5T676-460l-20-24-136 204H400l-80-70q-5 63-51 106.5T160-200Zm0-80q33 0 56.5-23.5T240-360q0-33-23.5-56.5T160-440q-33 0-56.5 23.5T80-360q0 33 23.5 56.5T160-280Zm294-240-144 54 144-54h130-130Zm346 240q33 0 56.5-23.5T880-360q0-33-23.5-56.5T800-440q-33 0-56.5 23.5T720-360q0 33 23.5 56.5T800-280Zm-322-80 106-160H454l-144 54 120 106h48Z"/></svg>
+        </span>
+        <span>Off Road</span>
+        <div class="subcat-dropdown">
+            <button class="subcat-btn" data-subcategory="offroad">Off Road</button>
+        </div>
+    </div>
+    
+    <!-- SPORT -->
+    <div class="floating-category" data-category="sport">
+        <span class="floating-svg-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="currentColor"><path d="M160-200q-66 0-113-47T0-360q0-57 36.5-101t93.5-55l-28-24H0v-60h180l100 60 160-60h126l-62-80H400v-80h142l84 108 134-68v120h-92l70 92q15-6 30.5-9t31.5-3q66 0 113 47t47 113q0 66-47 113t-113 47q-66 0-113-47t-47-113q0-27 9.5-52.5T676-460l-20-24-136 204H400l-80-70q-5 63-51 106.5T160-200Zm0-80q33 0 56.5-23.5T240-360q0-33-23.5-56.5T160-440q-33 0-56.5 23.5T80-360q0 33 23.5 56.5T160-280Zm294-240-144 54 144-54h130-130Zm346 240q33 0 56.5-23.5T880-360q0-33-23.5-56.5T800-440q-33 0-56.5 23.5T720-360q0 33 23.5 56.5T800-280Zm-322-80 106-160H454l-144 54 120 106h48Z"/></svg>
+        </span>
+        <span>Sport</span>
+        <div class="subcat-dropdown">
+            <button class="subcat-btn" data-subcategory="sport">Sport</button>
+        </div>
+    </div>
+</div>
+
+<!-- Botão limpar filtro -->
+<div style="text-align:center;">
+    <button class="honda-reset-filter" id="resetFilter">✕ Limpar Filtro</button>
+</div>
+
+
+
+<!-- CARROSSEL -->
+<div class="carousel-wrapper">
+    <div class="carousel-container" id="carouselContainer">
+        <div class="carousel-track" id="carouselTrack">
+
+
+
+            <!-- TESTE: Item estático para garantir visualização -->
+            <div class="carousel-item active">
+                <img src="/static/carrossel/bros.jpg" alt="bros.jpg" style="width:90%;height:90%;object-fit:contain;">
+                <div class="item-label">bros.jpg</div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="carousel-indicators" id="carouselIndicators"></div>
+</div>
+
+<!-- GRID -->
+<div class="grid" id="products"></div>
+
+<!-- MODAL -->
+<div class="modal" id="modal" style="display:none;">
+    <div class="modal-content">
+        <span class="close" id="closeModal">&times;</span>
+        <img id="modalImg">
+        <h2 id="modalTitle"></h2>
+        <p id="modalDesc"></p>
+    </div>
+</div>
+
+<!-- SCRIPTS -->
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script src="js/carousel-enhanced.js"></script>
+
+
+<script>
+window.addEventListener("load", () => {
+    const splash = document.getElementById("splash");
+    if (!splash) return;
+
+    splash.style.transition = "opacity 0.6s ease";
+
+    const hideSplash = (delay = 600) => {
+        splash.style.opacity = "0";
+        setTimeout(() => splash.remove(), delay);
+    };
+
+        // Tempo igual ao da animação da moto (1.6s + 0.2s delay)
+        setTimeout(() => hideSplash(600), 1800);
+    splash.addEventListener("click", () => hideSplash(400));
+});
+</script>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="footer-content">
+        <h3><i class="fas fa-motorcycle"></i> Vitrine Honda</h3>
+        <p>Aciona o 01 da Honda!</p>
+
+        <div class="footer-links">
+            <a href="#">Política de Privacidade</a>
+            <a href="#">Termos de Uso</a>
+            <a href="#">Contato</a>
+        </div>
+
+        <div class="social">
+            <a href="https://www.instagram.com/ronaldhonda__/" target="_blank">
+                <i class="fab fa-instagram"></i>
+            </a>
+            <a href="https://api.whatsapp.com/send?phone=5575998646978" target="_blank">
+                <i class="fab fa-whatsapp"></i>
+            </a>
+        </div>
+
+        <p class="copy">
+            &copy; 2025 Vitrine Ronaldhonda — Todos os direitos reservados.
+        </p>
+    </div>
+</footer>
+
+<script src="js/theme-toggle.js"></script>
+</body>
+</html>

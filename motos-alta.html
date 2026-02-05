@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <link rel="stylesheet" href="css/style.css">
+
+<head>
+  <!-- ...existing code (meta, fontes)... -->
+  <link rel="stylesheet" href="css/style.css">
+  <title>Motos Alta | Vitrine Honda</title>
+</head>
+<body>
+  <!-- ...existing header/menu markup... -->
+
+  <div class="header top-hero">
+    <!-- ...existing hero/picture... -->
+    <div class="hero-text">
+      <h1>Alta Cilindrada</h1>
+      <p>Modelos Honda de alta cilindrada.</p>
+
+    </div>
+  </div>
+
+  <!-- ...existing search bar if aplicável... -->
+
+  <div class="floating-categories">
+    <div class="floating-category active" data-category="alta"><span>Alta</span></div>
+    <div class="floating-category" data-category="media"><span>Média</span></div>
+    <div class="floating-category" data-category="scooter"><span>Scooter</span></div>
+  </div>
+
+  <div class="grid" id="products"></div>
+
+  <script>window.CATEGORIA_ATUAL = "alta";</script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/carousel-enhanced.js"></script>
+  <script src="js/theme-toggle.js"></script>
+</body>
+</html>

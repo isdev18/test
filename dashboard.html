@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Motos</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body {
+      background: #f5f6fa;
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+    .dashboard-panel {
+      max-width: 1050px;
+      margin: 48px auto 32px auto;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 6px 32px rgba(208,0,0,0.13);
+      padding: 38px 32px 32px 32px;
+      border: 1.5px solid #ececec;
+    }
+    .dashboard-panel h1 {
+      font-size: 2.3rem;
+      color: #d00000;
+      margin-bottom: 28px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-align: left;
+    }
+    #addMotoForm {
+      background: #fafbfc;
+      border-radius: 14px;
+      box-shadow: 0 2px 12px rgba(208,0,0,0.04);
+      padding: 24px 18px 10px 18px;
+      margin-bottom: 36px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(210px,1fr));
+      gap: 18px;
+      align-items: end;
+      border: 1px solid #ececec;
+    }
+    #addMotoForm label {
+      font-weight: 600;
+      color: #d00000;
+      margin-bottom: 4px;
+      display: block;
+    }
+    #addMotoForm input, #addMotoForm select {
+      width: 100%;
+      padding: 9px 10px;
+      border-radius: 7px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      margin-bottom: 2px;
+      background: #fff;
+      transition: border 0.2s;
+    }
+    #addMotoForm input:focus, #addMotoForm select:focus {
+      border: 1.5px solid #d00000;
+      outline: none;
+    }
+    #addMotoForm button[type="submit"] {
+      grid-column: 1/-1;
+      background: linear-gradient(90deg,#d00000 60%,#a00000 100%);
+      color: #fff;
+      border: none;
+      padding: 13px 0;
+      border-radius: 8px;
+      font-size: 1.13rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 10px;
+      box-shadow: 0 2px 8px rgba(208,0,0,0.08);
+      letter-spacing: 0.5px;
+      transition: background 0.2s;
+    }
+    #addMotoForm button[type="submit"]:hover {
+      background: linear-gradient(90deg,#a00000 60%,#d00000 100%);
+    }
+    #addMotoForm button[type="button"] {
+      background: #f2f2f2;
+      color: #d00000;
+      border: none;
+      padding: 7px 18px;
+      border-radius: 7px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.98rem;
+      margin-top: 2px;
+      margin-bottom: 2px;
+      transition: background 0.2s;
+    }
+    #addMotoForm button[type="button"]:hover {
+      background: #ffeaea;
+    }
+    .dashboard-list {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(340px,1fr));
+      gap: 22px;
+    }
+    .dashboard-item {
+      background: #fff;
+      border-radius: 13px;
+      box-shadow: 0 2px 12px rgba(208,0,0,0.07);
+      padding: 18px 18px 14px 18px;
+      display: flex;
+      align-items: flex-start;
+      gap: 18px;
+      border: 1px solid #ececec;
+      transition: box-shadow 0.2s, border 0.2s;
+    }
+    .dashboard-item:hover {
+      box-shadow: 0 6px 24px rgba(208,0,0,0.13);
+      border: 1.5px solid #d00000;
+    }
+    .dashboard-item img {
+      width: 90px;
+      height: 70px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-right: 0;
+      box-shadow: 0 2px 8px rgba(208,0,0,0.07);
+      border: 1px solid #ececec;
+    }
+    .dashboard-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .dashboard-info strong {
+      font-size: 1.15rem;
+      color: #d00000;
+      font-weight: 700;
+      display: block;
+      margin-bottom: 2px;
+      word-break: break-word;
+    }
+    .dashboard-info span {
+      font-size: 1.01rem;
+      color: #222;
+      display: block;
+      margin-bottom: 2px;
+    }
+    .dashboard-info .dashboard-stats {
+      margin-top: 7px;
+      font-size: 0.97rem;
+      color: #555;
+      display: flex;
+      gap: 14px;
+    }
+    .dashboard-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: flex-end;
+      min-width: 110px;
+    }
+    .dashboard-actions button {
+      padding: 8px 18px;
+      font-size: 0.98rem;
+      background: linear-gradient(90deg,#d00000 60%,#a00000 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(208,0,0,0.08);
+      transition: background 0.2s;
+    }
+    .dashboard-actions button:hover {
+      background: linear-gradient(90deg,#a00000 60%,#d00000 100%);
+    }
+    @media (max-width: 700px) {
+      .dashboard-panel {
+        padding: 10px 2vw;
+      }
+      #addMotoForm {
+        padding: 10px 2vw;
+        grid-template-columns: 1fr;
+      }
+      .dashboard-list {
+        grid-template-columns: 1fr;
+      }
+      .dashboard-item {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .dashboard-actions {
+        flex-direction: row;
+        gap: 10px;
+        justify-content: flex-end;
+        min-width: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <script>
+    if (localStorage.getItem('logadoADM') !== '1') {
+      window.location.href = 'login.html';
+    }
+  </script>
+  <div style="display:flex;justify-content:space-between;align-items:center;max-width:1000px;margin:32px auto 0 auto;">
+    <button onclick="window.location.href='index.html'" style="background:#eee;color:#d00000;border:none;padding:10px 22px;border-radius:8px;font-weight:600;cursor:pointer;">Voltar</button>
+    <button onclick="localStorage.removeItem('logadoADM');window.location.href='login.html'" style="background:#d00000;color:#fff;border:none;padding:10px 22px;border-radius:8px;font-weight:600;cursor:pointer;">Sair</button>
+  </div>
+  <div class="dashboard-panel">
+    <div class="dashboard-tabs" style="display:flex;gap:18px;margin-bottom:28px;">
+      <button id="tabMotos" class="tab-btn active" type="button" style="background:#d00000;color:#fff;border:none;padding:10px 32px;border-radius:8px;font-weight:700;font-size:1.08rem;cursor:pointer;transition:background 0.2s;">Motos</button>
+      <button id="tabCarrossel" class="tab-btn" type="button" style="background:#f2f2f2;color:#d00000;border:none;padding:10px 32px;border-radius:8px;font-weight:700;font-size:1.08rem;cursor:pointer;transition:background 0.2s;">Carrossel</button>
+    </div>
+    <div id="abaMotos">
+      <h1>Dashboard de Motos</h1>
+      <form id="addMotoForm" style="margin-bottom:32px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:18px;align-items:end;">
+      <div>
+        <label for="nome">Nome</label>
+        <input type="text" id="nome" name="nome" required>
+      </div>
+      <div>
+        <label for="preco">Preço à vista</label>
+        <input type="text" id="preco" name="preco" required placeholder="Ex: R$ 25.000 à vista">
+      </div>
+      <div>
+        <label for="imagem">URL da Imagem</label>
+        <input type="url" id="imagem" name="imagem" required>
+      </div>
+      <div>
+        <label for="descricao">Descrição</label>
+        <input type="text" id="descricao" name="descricao" required>
+      </div>
+      <div>
+        <label for="categoria">Categoria</label>
+        <select id="categoria" name="categoria" required onchange="atualizarSubcategorias()">
+          <option value="street">Street</option>
+          <option value="adventure">Adventure</option>
+          <option value="offroad">Off Road</option>
+          <option value="sport">Sport</option>
+        </select>
+      </div>
+      <div>
+        <label for="subcategoria">Subcategoria</label>
+        <select id="subcategoria" name="subcategoria" required>
+          <option value="city">City</option>
+          <option value="scooter">Scooter</option>
+          <option value="naked">Naked</option>
+        </select>
+      </div>
+      <div style="grid-column:1/-1;">
+        <label>Consórcios</label>
+        <div id="consorciosContainer"></div>
+        <button type="button" id="addConsorcio" style="margin-top:6px;background:#eee;color:#d00000;border:none;padding:6px 16px;border-radius:6px;font-weight:600;cursor:pointer;">Adicionar Plano</button>
+      </div>
+      <div style="grid-column:1/-1;">
+        <label>Cores</label>
+        <div id="coresContainer"></div>
+        <button type="button" id="addCor" style="margin-top:6px;background:#eee;color:#d00000;border:none;padding:6px 16px;border-radius:6px;font-weight:600;cursor:pointer;">Adicionar Cor</button>
+      </div>
+      <button type="submit" style="grid-column:1/-1;background:#d00000;color:#fff;border:none;padding:12px 32px;border-radius:8px;font-size:1.1rem;font-weight:600;cursor:pointer;">Adicionar Moto</button>
+    </form>
+    <script>
+      // Subcategorias por categoria
+      const subcategoriasPorCategoria = {
+        street: [
+          { value: 'city', label: 'City' },
+          { value: 'scooter', label: 'Scooter' },
+          { value: 'naked', label: 'Naked' }
+        ],
+        adventure: [
+          { value: 'trail', label: 'Trail' },
+          { value: 'crossover', label: 'Crossover' },
+          { value: 'bigtrail', label: 'Big Trail' },
+          { value: 'scooter-adv', label: 'Scooter' }
+        ],
+        offroad: [
+          { value: 'offroad', label: 'Off Road' }
+        ],
+        sport: [
+          { value: 'sport', label: 'Sport' }
+        ]
+      };
+
+      function atualizarSubcategorias() {
+        const categoria = document.getElementById('categoria').value;
+        const subcatSelect = document.getElementById('subcategoria');
+        const subcats = subcategoriasPorCategoria[categoria] || [];
+        
+        subcatSelect.innerHTML = '';
+        subcats.forEach(sub => {
+          const opt = document.createElement('option');
+          opt.value = sub.value;
+          opt.textContent = sub.label;
+          subcatSelect.appendChild(opt);
+        });
+      }
+      
+      // Inicializa subcategorias
+      atualizarSubcategorias();
+
+      // Campos dinâmicos consórcio
+      const consorciosContainer = document.getElementById('consorciosContainer');
+      const addConsorcioBtn = document.getElementById('addConsorcio');
+      function addConsorcioField(plano = '', valor = '') {
+        const div = document.createElement('div');
+        div.style.display = 'flex';
+        div.style.gap = '8px';
+        div.style.marginBottom = '4px';
+        div.innerHTML = `<input type="text" placeholder="Plano (ex: 24x)" class="plano" value="${plano}" required style="width:80px;"> <input type="text" placeholder="Valor (ex: 1348,60)" class="valor" value="${valor}" required style="width:100px;"> <button type="button" style="background:#eee;color:#d00000;border:none;padding:2px 10px;border-radius:6px;font-weight:600;cursor:pointer;">X</button>`;
+        div.querySelector('button').onclick = () => div.remove();
+        consorciosContainer.appendChild(div);
+      }
+      addConsorcioBtn.onclick = () => addConsorcioField();
+      // Adiciona um campo por padrão
+      addConsorcioField();
+
+      // Campos dinâmicos cores
+      const coresContainer = document.getElementById('coresContainer');
+      const addCorBtn = document.getElementById('addCor');
+      function addCorField(cor = '') {
+        const div = document.createElement('div');
+        div.style.display = 'flex';
+        div.style.gap = '8px';
+        div.style.marginBottom = '4px';
+        div.innerHTML = `<input type="text" placeholder="Cor (ex: Vermelha)" class="cor" value="${cor}" required style="width:120px;"> <button type="button" style="background:#eee;color:#d00000;border:none;padding:2px 10px;border-radius:6px;font-weight:600;cursor:pointer;">X</button>`;
+        div.querySelector('button').onclick = () => div.remove();
+        coresContainer.appendChild(div);
+      }
+      addCorBtn.onclick = () => addCorField();
+      // Adiciona um campo por padrão
+      addCorField();
+    </script>
+      <div class="dashboard-list" id="dashboardList">
+        <!-- Motos renderizadas aqui -->
+      </div>
+    </div>
+    <div id="abaCarrossel" style="display:none;">
+      <h1>Imagens do Carrossel</h1>
+      <form id="formCarrossel" style="background:#fafbfc;border-radius:14px;box-shadow:0 2px 12px rgba(208,0,0,0.04);padding:24px 18px 18px 18px;margin-bottom:36px;display:flex;flex-direction:column;gap:18px;align-items:flex-start;border:1px solid #ececec;max-width:420px;">
+        <label style="font-weight:600;color:#d00000;">Upload de Imagem</label>
+        <input type="file" id="inputCarrossel" accept="image/*" style="margin-bottom:8px;">
+        <img id="previewCarrossel" src="" alt="Preview" style="display:none;max-width:220px;border-radius:8px;box-shadow:0 2px 8px rgba(208,0,0,0.07);border:1px solid #ececec;">
+        <button type="submit" style="background:#d00000;color:#fff;border:none;padding:10px 32px;border-radius:8px;font-weight:700;font-size:1.08rem;cursor:pointer;">Enviar Imagem</button>
+      </form>
+      <div id="carrosselImagens" style="display:flex;flex-wrap:wrap;gap:18px;"></div>
+    </div>
+  </div>
+  <script src="js/dashboard.js"></script>
+  <script>
+    // Tabs
+    const tabMotos = document.getElementById('tabMotos');
+    const tabCarrossel = document.getElementById('tabCarrossel');
+    const abaMotos = document.getElementById('abaMotos');
+    const abaCarrossel = document.getElementById('abaCarrossel');
+    tabMotos.onclick = () => {
+      tabMotos.classList.add('active');
+      tabCarrossel.classList.remove('active');
+      abaMotos.style.display = '';
+      abaCarrossel.style.display = 'none';
+      tabMotos.style.background = '#d00000';
+      tabMotos.style.color = '#fff';
+      tabCarrossel.style.background = '#f2f2f2';
+      tabCarrossel.style.color = '#d00000';
+    };
+    tabCarrossel.onclick = () => {
+      tabCarrossel.classList.add('active');
+      tabMotos.classList.remove('active');
+      abaMotos.style.display = 'none';
+      abaCarrossel.style.display = '';
+      tabCarrossel.style.background = '#d00000';
+      tabCarrossel.style.color = '#fff';
+      tabMotos.style.background = '#f2f2f2';
+      tabMotos.style.color = '#d00000';
+    };
+    // Preview imagem carrossel
+    const inputCarrossel = document.getElementById('inputCarrossel');
+    const previewCarrossel = document.getElementById('previewCarrossel');
+    inputCarrossel.onchange = e => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = ev => {
+          previewCarrossel.src = ev.target.result;
+          previewCarrossel.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      } else {
+        previewCarrossel.src = '';
+        previewCarrossel.style.display = 'none';
+      }
+    };
+    // (A integração do upload será feita no backend depois)
+  </script>
+  <script src="js/theme-toggle.js"></script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teste Vitrine</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    .card { border: 1px solid #ccc; padding: 15px; margin: 10px; display: inline-block; width: 250px; vertical-align: top; }
+    .card img { width: 100%; height: 150px; object-fit: contain; }
+    .btn { background: #d00000; color: white; border: none; padding: 10px; margin: 5px 0; cursor: pointer; width: 100%; }
+    #log { background: #f0f0f0; padding: 10px; margin-bottom: 20px; white-space: pre-wrap; font-family: monospace; }
+  </style>
+</head>
+<body>
+  <h1>Teste da Vitrine Honda</h1>
+  
+  <div id="log"></div>
+  
+  <h2>Categoria: <span id="catAtual">-</span></h2>
+  
+  <div>
+    <button onclick="testarCategoria('scooter')">Scooter</button>
+    <button onclick="testarCategoria('media')">Média</button>
+    <button onclick="testarCategoria('alta')">Alta</button>
+    <button onclick="testarCategoria('baixa')">Baixa</button>
+    <button onclick="testarCategoria(null)">Todas</button>
+  </div>
+  
+  <div class="grid" id="products"></div>
+
+  <script src="js/data.js"></script>
+  <script>
+    const log = document.getElementById('log');
+    const container = document.getElementById('products');
+    
+    function addLog(msg) {
+      log.textContent += msg + '\n';
+      console.log(msg);
+    }
+    
+    addLog('=== TESTE INICIADO ===');
+    addLog('PRODUCTS carregado: ' + (Array.isArray(window.PRODUCTS) ? 'SIM' : 'NÃO'));
+    addLog('Total de motos: ' + (window.PRODUCTS ? window.PRODUCTS.length : 0));
+    addLog('getCategoria existe: ' + (typeof window.getCategoria === 'function' ? 'SIM' : 'NÃO'));
+    
+    // Mostra categorias de cada moto
+    if (window.PRODUCTS && window.getCategoria) {
+      const cats = { scooter: [], media: [], alta: [], baixa: [], null: [] };
+      window.PRODUCTS.forEach(p => {
+        const cat = window.getCategoria(p);
+        if (cats[cat]) cats[cat].push(p.nome);
+        else cats['null'].push(p.nome);
+      });
+      addLog('\n--- CLASSIFICAÇÃO ---');
+      addLog('Scooter: ' + cats.scooter.length + ' motos');
+      addLog('Média: ' + cats.media.length + ' motos');
+      addLog('Alta: ' + cats.alta.length + ' motos');
+      addLog('Baixa: ' + cats.baixa.length + ' motos');
+      addLog('Sem categoria: ' + cats['null'].length + ' motos');
+    }
+    
+    function testarCategoria(cat) {
+      document.getElementById('catAtual').textContent = cat || 'TODAS';
+      container.innerHTML = '';
+      
+      let lista = window.PRODUCTS || [];
+      if (cat) {
+        lista = lista.filter(p => window.getCategoria(p) === cat);
+      }
+      
+      addLog('\n--- Filtrando: ' + (cat || 'TODAS') + ' ---');
+      addLog('Resultado: ' + lista.length + ' motos');
+      
+      lista.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <img src="${p.imagem}" alt="${p.nome}">
+          <h3>${p.nome}</h3>
+          <p>${p.cilindrada}cc - ${window.getCategoria(p)}</p>
+          <p>${p.preco}</p>
+        `;
+        container.appendChild(card);
+      });
+    }
+    
+    // Inicia com todas
+    testarCategoria(null);
+  </script>
+</body>
+</html>

@@ -1,0 +1,203 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Simulação de Financiamento</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="css/style.css">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    background: var(--bg-main, #f2f2f2);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.form-container {
+    width: 100%;
+    max-width: 420px;
+    background: var(--bg-secondary, #ffffff);
+    border-radius: 10px;
+    padding: 22px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    color: var(--text-main, #111);
+}
+
+/* BOTÃO VOLTAR */
+.btn-voltar {
+    background: none;
+    border: none;
+    color: #d50000;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+.btn-voltar:hover {
+    text-decoration: underline;
+}
+
+.form-container h1 {
+    font-size: 20px;
+    color: #111;
+    text-align: center;
+    margin-bottom: 6px;
+}
+
+.form-container .subtitulo {
+    font-size: 13px;
+    color: #666;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 14px;
+}
+
+.form-group label {
+    font-size: 13px;
+    color: #333;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 11px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #d50000;
+}
+
+input[readonly] {
+    background: #f7f7f7;
+}
+
+button[type="submit"] {
+    width: 100%;
+    margin-top: 12px;
+    padding: 13px;
+    background: #d50000;
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button[type="submit"]:hover {
+    background: #b40000;
+}
+
+#status {
+    display: none;
+    margin-top: 14px;
+    padding: 12px;
+    background: #e9f7ef;
+    color: #0f5132;
+    border-radius: 6px;
+    font-size: 14px;
+    text-align: center;
+}
+
+.info {
+    margin-top: 14px;
+    font-size: 12px;
+    color: #666;
+    text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<div class="form-container">
+
+    <button class="btn-voltar" onclick="history.back()">← Voltar</button>
+
+    <h1>Simulação de Financiamento</h1>
+    <p class="subtitulo">Preencha os dados para análise</p>
+
+    <form id="formFinanciamento">
+
+        <div class="form-group">
+            <label>Nome completo</label>
+            <input type="text" id="nome" name="nome" required>
+        </div>
+
+        <div class="form-group">
+            <label>CPF</label>
+            <input type="text" id="cpf" name="cpf" required>
+        </div>
+
+        <div class="form-group">
+            <label>Telefone / WhatsApp</label>
+            <input type="tel" id="telefone" name="telefone" required>
+        </div>
+
+        <!-- ✅ DATA DE NASCIMENTO (NO LUGAR DO EMAIL) -->
+        <div class="form-group">
+            <label>Data de nascimento</label>
+            <input type="date" id="data_nascimento" name="data_nascimento">
+
+        </div>
+
+        <div class="form-group">
+            <label>Moto desejada</label>
+            <input type="text" id="moto" name="moto" readonly>
+        </div>
+
+        <div class="form-group">
+            <label>Valor de entrada (se houver)</label>
+            <input type="number" id="entrada" name="entrada" placeholder="Ex: 3000">
+        </div>
+
+        <div class="form-group">
+            <label>Possui habilitação?</label>
+            <select id="cnh" name="cnh" required>
+                <option value="">Selecione</option>
+                <option value="Sim">Sim</option>
+                <option value="Não">Não</option>
+            </select>
+        </div>
+
+        <button type="submit">
+            Enviar para análise
+        </button>
+
+    </form>
+
+    <p id="status">Dados enviados. Em análise.</p>
+
+    <p class="info">
+        Seus dados são enviados com segurança para análise de crédito.
+    </p>
+
+</div>
+
+<script src="js/theme-toggle.js"></script>
+<script src="js/form.js"></script>
+</body>
+</html>
