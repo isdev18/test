@@ -219,6 +219,11 @@ def health():
     return jsonify({'status': 'ok'})
 
 
+# Health endpoint for container orchestration
+@app.route('/health', methods=['GET'])
+def health():
+    return jsonify({'status': 'ok'}), 200
+
 if __name__ == '__main__':
     init_db()  # Inicializa/atualiza estrutura do banco
     port = int(os.environ.get('PORT', 5000))

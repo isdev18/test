@@ -29,4 +29,5 @@ ENV FLASK_DEBUG=0
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 CMD curl -f http://localhost:5000/health || exit 1
 
 # Start with gunicorn and config
-CMD ["gunicorn", "-c", "gunicorn.conf.py", "app:app"]
+COPY gunicorn_conf.py /app/
+CMD ["gunicorn", "-c", "gunicorn_conf.py", "app:app"]
