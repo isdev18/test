@@ -26,7 +26,7 @@ ENV PORT=5000
 ENV FLASK_DEBUG=0
 
 # Healthcheck
-HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 CMD-SHELL "curl -f http://localhost:$PORT/health || exit 1"
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 CMD /bin/sh -c "curl -f http://localhost:$PORT/health || exit 1"
 
 # Start with gunicorn and config
 COPY gunicorn_conf.py /app/
