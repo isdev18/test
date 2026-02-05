@@ -17,7 +17,8 @@ MAX_WORKERS = int(os.environ.get('GUNICORN_MAX_WORKERS', 8))
 if workers > MAX_WORKERS:
     workers = MAX_WORKERS
 
-bind = '0.0.0.0:5000'
+port = os.environ.get('PORT', '5000')
+bind = f'0.0.0.0:{port}'
 worker_class = 'sync'
 accesslog = '-'  # stdout
 errorlog = '-'
