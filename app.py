@@ -220,9 +220,10 @@ def health():
 
 
 # Health endpoint for container orchestration
-@app.route('/health', methods=['GET'])
-def health():
-    return jsonify({'status': 'ok'}), 200
+if 'health_check' not in app.view_functions:
+    @app.route('/health', methods=['GET'], endpoint='health_check')
+    def health_check():
+        return jsonify({'status': 'ok'}), 200
 
 if __name__ == '__main__':
     init_db()  # Inicializa/atualiza estrutura do banco
