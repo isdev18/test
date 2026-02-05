@@ -213,11 +213,8 @@ def deletar_moto(id):
         return jsonify({'erro': 'Moto não encontrada'}), 404
 
 
-@app.route('/health', methods=['GET'])
-def health():
-    """Health endpoint for container orchestration and monitoring."""
-    return jsonify({'status': 'ok'})
-
+# Health endpoint consolidated to 'health_check' to avoid duplicate registrations
+# (defined below when not already present)
 
 # Health endpoint for container orchestration
 if 'health_check' not in app.view_functions:
