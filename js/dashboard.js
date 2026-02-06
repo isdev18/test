@@ -106,7 +106,23 @@ async function renderDashboard() {
 
 async function deletarMoto(id) {
   if (!confirm('Deseja deletar esta moto?')) return;
-  await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+  try {
+    const r = await fetch('/admin/delete_moto', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id })
+    });
+    if (r.ok) {
+      const resp = await r.json();
+      if (resp && (resp.status === 'ok' || resp.status === 'deletado' || resp.status === 'deleted')) {
+        renderDashboard();
+        return;
+      }
+    }
+  } catch (e) {
+    console.error('Erro ao deletar:', e);
+  }
+  // fallback: recarrega a lista
   renderDashboard();
 }
 
@@ -142,11 +158,15 @@ async function adicionarMoto(e) {
     consorcios,
     cores
   };
-  await fetch(API_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(nova)
-  });
+  try {
+    await fetch('/admin/add_moto', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(nova)
+    });
+  } catch (e) {
+    console.error('Erro ao adicionar no backend:', e);
+  }
   form.reset();
   // Limpa campos dinâmicos e adiciona um novo campo padrão
   document.getElementById('consorciosContainer').innerHTML = '';
