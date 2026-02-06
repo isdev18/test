@@ -1,5 +1,7 @@
 // ========== CARROSSEL ==========
-const CARROSSEL_API = 'http://localhost:5000/carrossel';
+// usar caminho relativo em produção
+const CARROSSEL_API = '/carrossel';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzK9VqA5SNt9Zavp2D2FkU3hAWNU928OdzR0k888FLFLrqNAsRapKUnaklmaYuVvobY/exec';
 
 async function listarImagensCarrossel() {
   const MAX_SLOTS = 5; // número de espaços do carrossel na vitrine
@@ -67,7 +69,7 @@ if (formCarrossel) {
 
 // dashboard.js - Integração 100% com API Flask
 
-const API_URL = 'http://localhost:5000/motos';
+const API_URL = APPS_SCRIPT_URL;
 
 async function fetchMotos() {
   const res = await fetch(API_URL);
@@ -107,7 +109,7 @@ async function renderDashboard() {
 async function deletarMoto(id) {
   if (!confirm('Deseja deletar esta moto?')) return;
   try {
-    const r = await fetch('/admin/delete_moto', {
+    const r = await fetch(APPS_SCRIPT_URL + '?action=delete', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id })
@@ -120,7 +122,7 @@ async function deletarMoto(id) {
       }
     }
   } catch (e) {
-    console.error('Erro ao deletar:', e);
+    console.error('Erro ao deletar via Apps Script:', e);
   }
   // fallback: recarrega a lista
   renderDashboard();
@@ -159,13 +161,13 @@ async function adicionarMoto(e) {
     cores
   };
   try {
-    await fetch('/admin/add_moto', {
+    await fetch(APPS_SCRIPT_URL + '?action=add', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(nova)
     });
   } catch (e) {
-    console.error('Erro ao adicionar no backend:', e);
+    console.error('Erro ao adicionar via Apps Script:', e);
   }
   form.reset();
   // Limpa campos dinâmicos e adiciona um novo campo padrão
