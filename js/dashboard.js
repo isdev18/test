@@ -1,7 +1,7 @@
 // ========== CARROSSEL ==========
 // usar caminho relativo em produção
 const CARROSSEL_API = '/carrossel';
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwqOihs9mAFgsE8jMPG00-J1nAdD4Z3G32f5SJPaoULehz932zLcJp5Bjwlgim7Y90C/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwtyQTUTE9wP7UjHQvcJXolbMxoDZM7nraTczVdc-VV0T4VidhZLMiNDFcRKy7yWzQB/exec';
 
 async function listarImagensCarrossel() {
   const MAX_SLOTS = 5; // número de espaços do carrossel na vitrine
@@ -67,25 +67,36 @@ if (formCarrossel) {
   document.getElementById('tabCarrossel').addEventListener('click', listarImagensCarrossel);
 }
 
-// dashboard.js - Integração 100% com API Flask
+// dashboard.js - Integração com o backend Flask
 
-const API_URL = APPS_SCRIPT_URL;
+const API_URL = '/motos';
 
 async function fetchMotos() {
   const res = await fetch(API_URL);
-  return res.json();
+  try { return await res.json(); } catch (e) { console.error('Erro parse /motos', e); return []; }
 }
 
 async function renderDashboard() {
   const lista = document.getElementById('dashboardList');
   lista.innerHTML = '<p style="text-align:center;">Carregando...</p>';
-  const motos = await fetchMotos();
+  let motos = await fetchMotos();
+  // lidar com respostas de erro do backend
+  if (!motos) motos = [];
+  if (motos && motos.status === 'error') {
+    lista.innerHTML = `<p>Erro ao carregar motos: ${motos.error || motos.detail || ''}</p>`;
+    return;
+  }
+  // normalizar para array caso Apps Script retorne um objeto
+  if (!Array.isArray(motos)) {
+    if (typeof motos === 'object') motos = Object.values(motos);
+    else motos = [];
+  }
   if (!motos.length) {
     lista.innerHTML = '<p>Nenhuma moto cadastrada.</p>';
     return;
   }
   lista.innerHTML = '';
-  motos.forEach(moto => {
+  motos.forEach((moto, idx) => {
     const item = document.createElement('div');
     item.className = 'dashboard-item';
     item.innerHTML = `
@@ -99,30 +110,46 @@ async function renderDashboard() {
         </div>
       </div>
       <div class="dashboard-actions">
-        <button onclick="deletarMoto(${moto.id})">Deletar</button>
+        <button class="del-btn" data-id="${moto.id}">Deletar</button>
       </div>
     `;
     lista.appendChild(item);
   });
+
+  // attach handlers for delete buttons
+  lista.querySelectorAll('.del-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const id = e.currentTarget.dataset.id;
+      if (!id) return alert('ID da moto não disponível');
+      await deletarMotoById(id);
+    });
+  });
 }
 
-async function deletarMoto(id) {
+async function deletarMotoById(id) {
   if (!confirm('Deseja deletar esta moto?')) return;
+  const idNum = Number(id);
+  if (!Number.isFinite(idNum)) return alert('ID inválido para exclusão');
+
   try {
-    // usar GET com query param para evitar preflight CORS no navegador
-    const r = await fetch(APPS_SCRIPT_URL + '?action=delete&id=' + encodeURIComponent(id));
-    if (r.ok) {
-      const resp = await r.json();
-      if (resp && (resp.status === 'ok' || resp.status === 'deletado' || resp.status === 'deleted')) {
-        renderDashboard();
-        return;
-      }
+    const r = await fetch('/admin/delete_moto', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: idNum })
+    });
+    const resp = await r.json().catch(() => ({}));
+    if (!r.ok || resp.status === 'error') {
+      alert('Erro ao deletar: ' + (resp.error || resp.detail || JSON.stringify(resp)));
+    } else {
+      await renderDashboard();
     }
+    return;
   } catch (e) {
-    console.error('Erro ao deletar via Apps Script:', e);
+    console.error('Falha ao chamar /admin/delete_moto', e);
+    alert('Erro de rede ao deletar');
+    await renderDashboard();
+    return;
   }
-  // fallback: recarrega a lista
-  renderDashboard();
 }
 
 async function adicionarMoto(e) {
@@ -158,11 +185,15 @@ async function adicionarMoto(e) {
     cores
   };
   try {
-    await fetch(APPS_SCRIPT_URL + '?action=add', {
+    const r = await fetch('/admin/add_moto', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(nova)
     });
+    const resp = await r.json().catch(() => ({}));
+    if (!r.ok || resp.status === 'error') {
+      alert('Erro ao adicionar: ' + (resp.error || resp.detail || JSON.stringify(resp)));
+    }
   } catch (e) {
     console.error('Erro ao adicionar via Apps Script:', e);
   }
@@ -179,8 +210,8 @@ async function adicionarMoto(e) {
 
 document.getElementById('addMotoForm').addEventListener('submit', adicionarMoto);
 
-// Expor para HTML
-window.deletarMoto = deletarMoto;
+// Expor para HTML caso outro script chame
+window.deletarMoto = deletarMotoById;
 
 // Inicializa
 renderDashboard();

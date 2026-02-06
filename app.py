@@ -14,7 +14,7 @@ CORS(app)
 # CONFIG
 # ===============================
 
-GOOGLE_API = "https://script.google.com/macros/s/AKfycbzK9VqA5SNt9Zavp2D2FkU3hAWNU928OdzR0k888FLFLrqNAsRapKUnaklmaYuVvobY/exec"
+GOOGLE_API = "https://script.google.com/macros/s/AKfycbwtyQTUTE9wP7UjHQvcJXolbMxoDZM7nraTczVdc-VV0T4VidhZLMiNDFcRKy7yWzQB/exec"
 
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'carrossel')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
@@ -33,6 +33,30 @@ def get_carrossel_db():
     return conn
 
 
+# Helper para chamadas ao Apps Script (padroniza logs e tratamento)
+def call_google(action, payload=None, method='POST'):
+    url = GOOGLE_API + f"?action={action}"
+    try:
+        print(f"CHAMANDO APPS SCRIPT: {url} payload={payload}")
+        if method == 'GET':
+            r = requests.get(url, timeout=10)
+        else:
+            r = requests.post(url, json=payload, timeout=10)
+        # sempre logar a resposta bruta para facilitar diagnóstico
+        print('RESPOSTA GOOGLE:', r.status_code, r.text)
+        r.raise_for_status()
+        try:
+            data = r.json()
+            return True, data, r.status_code
+        except ValueError:
+            # retorno não-JSON
+            return False, {'status': 'error', 'detail': 'Invalid JSON from Apps Script', 'text': r.text}, r.status_code
+    except requests.RequestException as e:
+        print('ERRO REQUEST PARA APPS SCRIPT:', e)
+        return False, {'status': 'error', 'error': str(e)}, 502
+
+
+
 # ===============================
 # ROTAS PÚBLICAS
 # ===============================
@@ -45,8 +69,30 @@ def index():
 
 @app.route('/<path:filename>')
 def serve_files(filename):
-    if os.path.exists(filename):
-        return send_from_directory('.', filename)
+    # Normaliza e tenta várias variantes do caminho solicitado antes de 404.
+    # Exemplos: adicionar .html, trocar espaços por hífen, remover espaços.
+    candidates = [filename, filename + '.html']
+
+    if ' ' in filename:
+        candidates.extend([
+            filename.replace(' ', '-'),
+            filename.replace(' ', '-') + '.html',
+            filename.replace(' ', ''),
+            filename.replace(' ', '') + '.html'
+        ])
+
+    # também testar versão em minúsculas (ex.: /Moto Top -> mototop.html)
+    lower = filename.lower()
+    if lower not in candidates:
+        candidates.append(lower)
+        candidates.append(lower + '.html')
+
+    for candidate in candidates:
+        # prevenir caminhos fora da pasta atual
+        candidate_clean = os.path.normpath(candidate)
+        if os.path.exists(candidate_clean):
+            return send_from_directory('.', candidate_clean)
+
     return "Arquivo não encontrado", 404
 
 
@@ -127,13 +173,18 @@ def delete_carrossel():
 
 @app.route('/motos', methods=['GET'])
 def listar_motos():
-    try:
-        r = requests.get(GOOGLE_API, timeout=10)
-        data = r.json()
-        return jsonify(data)
-    except Exception as e:
-        print("Erro ao buscar Google Sheets:", e)
-        return jsonify([])
+    ok, data, status = call_google('list', None, method='GET')
+    if not ok:
+        return jsonify(data), status if isinstance(status, int) else 502
+    # garantir que sempre retornamos array (ou objeto convertido em array)
+    if isinstance(data, dict) and not isinstance(data, list):
+        # se o Apps Script retornou um objeto com chave única, convertemos para lista
+        try:
+            arr = list(data.values())
+            return jsonify(arr)
+        except Exception:
+            return jsonify(data)
+    return jsonify(data)
 
 
 @app.route('/health')
@@ -141,52 +192,65 @@ def health():
     return jsonify({"status": "ok"})
 
 
+@app.route('/debug', methods=['GET'])
+def debug():
+    """Rota de diagnóstico: testa conexão com o Apps Script e retorna resultado."""
+    ok, data, status = call_google('list', None, method='GET')
+    if not ok:
+        return jsonify({'status': 'error', 'detail': 'Falha ao conectar com Apps Script', 'response': data}), status if isinstance(status, int) else 502
+    return jsonify({'status': 'ok', 'count': len(data) if isinstance(data, list) else 0, 'sample': (data[:5] if isinstance(data, list) else data)})
+
+
 @app.route('/admin/add_moto', methods=['POST'])
 def add_moto():
     """Adiciona moto: encaminha o JSON recebido para o Apps Script com action=add."""
     data = request.get_json() or {}
-    try:
-        r = requests.post(GOOGLE_API + "?action=add", json=data, timeout=10)
-        r.raise_for_status()
-        try:
-            resp = r.json()
-        except ValueError:
-            return jsonify({'status': 'error', 'detail': 'Invalid JSON from Apps Script', 'text': r.text}), 502
-        return jsonify(resp)
-    except requests.RequestException as e:
-        return jsonify({'status': 'error', 'error': str(e)}), 502
+    app.logger.info('add_moto -> forwarding to Apps Script: %s', data)
+    ok, resp, status = call_google('add', data, method='POST')
+    if not ok:
+        return jsonify(resp), status if isinstance(status, int) else 502
+    return jsonify(resp)
 
 
 @app.route('/admin/delete_moto', methods=['POST'])
 def delete_moto():
     """Deleta moto: envia {"id":...} para Apps Script com action=delete."""
     data = request.get_json() or {}
+    # validação: id obrigatório e numérico
+    id_val = data.get('id')
+    if id_val is None:
+        return jsonify({'status': 'error', 'error': 'id obrigatório'}), 400
     try:
-        r = requests.post(GOOGLE_API + "?action=delete", json=data, timeout=10)
-        r.raise_for_status()
-        try:
-            resp = r.json()
-        except ValueError:
-            return jsonify({'status': 'error', 'detail': 'Invalid JSON from Apps Script', 'text': r.text}), 502
-        return jsonify(resp)
-    except requests.RequestException as e:
-        return jsonify({'status': 'error', 'error': str(e)}), 502
+        id_int = int(id_val)
+    except Exception:
+        return jsonify({'status': 'error', 'error': 'id deve ser numérico'}), 400
+
+    payload = {'id': id_int}
+    app.logger.info('delete_moto -> received payload: %s', payload)
+    ok, resp, status = call_google('delete', payload, method='POST')
+    if not ok:
+        return jsonify(resp), status if isinstance(status, int) else 502
+    return jsonify(resp)
 
 
 @app.route('/admin/edit_moto', methods=['POST'])
 def edit_moto():
     """Edita moto: envia JSON para Apps Script com action=edit."""
     data = request.get_json() or {}
+    # id obrigatório para editar
+    id_val = data.get('id')
+    if id_val is None:
+        return jsonify({'status': 'error', 'error': 'id obrigatório para edição'}), 400
     try:
-        r = requests.post(GOOGLE_API + "?action=edit", json=data, timeout=10)
-        r.raise_for_status()
-        try:
-            resp = r.json()
-        except ValueError:
-            return jsonify({'status': 'error', 'detail': 'Invalid JSON from Apps Script', 'text': r.text}), 502
-        return jsonify(resp)
-    except requests.RequestException as e:
-        return jsonify({'status': 'error', 'error': str(e)}), 502
+        data['id'] = int(id_val)
+    except Exception:
+        return jsonify({'status': 'error', 'error': 'id deve ser numérico'}), 400
+
+    app.logger.info('edit_moto -> forwarding to Apps Script: %s', data)
+    ok, resp, status = call_google('edit', data, method='POST')
+    if not ok:
+        return jsonify(resp), status if isinstance(status, int) else 502
+    return jsonify(resp)
 
 
 

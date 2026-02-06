@@ -120,24 +120,25 @@ function getCategoriaHonda(produto) {
 }
 
 // =============================
-// DADOS (usando Google Sheets via Apps Script)
+// DADOS (através do backend Flask)
+// - Usa a rota Flask `/motos` que por sua vez chama o Apps Script.
+// - Garante que erros do Apps Script sejam tratados e a dashboard atualize corretamente.
 // =============================
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwqOihs9mAFgsE8jMPG00-J1nAdD4Z3G32f5SJPaoULehz932zLcJp5Bjwlgim7Y90C/exec';
 let produtos = [];
 
 async function carregarProdutos() {
   try {
-    const res = await fetch(APPS_SCRIPT_URL);
-    if (res.ok) {
-      const motosDB = await res.json();
-      produtos = Array.isArray(motosDB) ? motosDB : [];
-      console.log('[API] Motos carregadas do Google Sheets:', produtos.length);
+    const res = await fetch('/motos');
+    const dados = await res.json();
+    if (res.ok && dados && dados.status !== 'error') {
+      produtos = Array.isArray(dados) ? dados : Object.values(dados || {});
+      console.log('[API] Motos carregadas do backend:', produtos.length);
     } else {
-      console.error('[API] Erro ao carregar motos:', res.status);
+      console.warn('[API] Resposta de /motos indica erro:', dados);
       produtos = [];
     }
   } catch (err) {
-    console.error('[API] Erro ao conectar com Apps Script:', err);
+    console.error('[API] Erro ao conectar com backend /motos:', err);
     produtos = [];
   }
 
