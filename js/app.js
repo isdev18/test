@@ -122,7 +122,7 @@ function getCategoriaHonda(produto) {
 // =============================
 // DADOS (usando Google Sheets via Apps Script)
 // =============================
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzK9VqA5SNt9Zavp2D2FkU3hAWNU928OdzR0k888FLFLrqNAsRapKUnaklmaYuVvobY/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwqOihs9mAFgsE8jMPG00-J1nAdD4Z3G32f5SJPaoULehz932zLcJp5Bjwlgim7Y90C/exec';
 let produtos = [];
 
 async function carregarProdutos() {

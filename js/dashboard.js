@@ -1,7 +1,7 @@
 // ========== CARROSSEL ==========
 // usar caminho relativo em produção
 const CARROSSEL_API = '/carrossel';
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzK9VqA5SNt9Zavp2D2FkU3hAWNU928OdzR0k888FLFLrqNAsRapKUnaklmaYuVvobY/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwqOihs9mAFgsE8jMPG00-J1nAdD4Z3G32f5SJPaoULehz932zLcJp5Bjwlgim7Y90C/exec';
 
 async function listarImagensCarrossel() {
   const MAX_SLOTS = 5; // número de espaços do carrossel na vitrine

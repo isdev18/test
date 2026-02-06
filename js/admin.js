@@ -1,7 +1,7 @@
 // admin.js - lógica do painel administrativo (integração com backend)
 
 let produtos = [];
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzK9VqA5SNt9Zavp2D2FkU3hAWNU928OdzR0k888FLFLrqNAsRapKUnaklmaYuVvobY/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwqOihs9mAFgsE8jMPG00-J1nAdD4Z3G32f5SJPaoULehz932zLcJp5Bjwlgim7Y90C/exec';
 
 function salvarProdutos() {
   try {
@@ -28,58 +28,87 @@ function renderProdutos() {
       </div>
       <div class="product-actions">
         <button onclick="editarProduto(${idx})">Editar</button>
-        <button onclick="removerProduto(${idx})">Remover</button>
-      </div>
-    `;
-    lista.appendChild(item);
-  });
-}
+            const r = await fetch(APPS_SCRIPT_URL);
+            if (r.ok) {
+              const data = await r.json();
+              produtos = Array.isArray(data) ? data : [];
+              renderProdutos();
+              return;
+            }
+            console.error('Erro ao carregar motos do Apps Script', r.status);
+          } catch (err) {
+            console.error('Erro ao conectar com Apps Script:', err);
+          }
 
-async function carregarProdutos() {
-  // Carrega diretamente do Apps Script (Google Sheets)
-  try {
-    const r = await fetch(APPS_SCRIPT_URL);
-    if (r.ok) {
-      const data = await r.json();
-      produtos = Array.isArray(data) ? data : [];
-      renderProdutos();
+          // Se falhar, mostra lista vazia
+          produtos = [];
+          renderProdutos();
       return;
     }
     console.error('Erro ao carregar motos do Apps Script', r.status);
   } catch (err) {
     console.error('Erro ao conectar com Apps Script:', err);
-  }
+          const payload = {
+            nome: form.nome.value,
+            preco: form.preco.value,
+            imagem: form.imagem.value,
+            descricao: form.descricao.value,
+            categoria: form.categoria.value
+          };
 
-  // Se falhar, mostra mensagem vazia
-  produtos = [];
-  renderProdutos();
-}
+          // Se estiver editando, inclui o id e chama action=edit
+          if (editingId) {
+            try {
+              const r = await fetch(APPS_SCRIPT_URL + '?action=edit', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(Object.assign({id: editingId}, payload))
+              });
+              if (r.ok) {
+                const resp = await r.json();
+                // atualiza lista localmente
+                const idx = produtos.findIndex(p => String(p.id) === String(editingId));
+                if (idx >= 0) produtos[idx] = resp && resp.id ? resp : Object.assign({id: editingId}, payload);
+                else produtos.unshift(resp && resp.id ? resp : Object.assign({id: editingId}, payload));
+                editingId = null;
+                renderProdutos();
+                form.reset();
+                return;
+              }
+              console.error('Erro ao editar via Apps Script', r.status);
+            } catch (err) {
+              console.error('Erro ao enviar edit para Apps Script:', err);
+            }
+            // se falhar, limpa estado de edição e continua
+            editingId = null;
+            renderProdutos();
+            form.reset();
+            return;
+          }
 
-document.getElementById('addProductForm').addEventListener('submit', async function (e) {
-  e.preventDefault();
-  const form = e.target;
-  const novo = {
-    nome: form.nome.value,
-    preco: form.preco.value,
-    imagem: form.imagem.value,
-    descricao: form.descricao.value,
-    categoria: form.categoria.value
-  };
+          // fluxo de adicionar
+          try {
+            const r = await fetch(APPS_SCRIPT_URL + '?action=add', {
+              method: 'POST',
+              headers: {'Content-Type': 'application/json'},
+              body: JSON.stringify(payload)
+            });
+            if (r.ok) {
+              const resp = await r.json();
+              produtos.unshift(resp && resp.id ? resp : payload);
+              renderProdutos();
+              form.reset();
+              return;
+            }
+            console.error('Erro ao adicionar via Apps Script', r.status);
+          } catch (err) {
+            console.error('Erro ao enviar add para Apps Script:', err);
+          }
 
-  // tenta enviar para backend; se falhar, salva localmente
-  try {
-    const r = await fetch(APPS_SCRIPT_URL + '?action=add', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(novo)
-    });
-    if (r.ok) {
-      const resp = await r.json();
-      produtos.unshift(resp && resp.id ? resp : novo);
-      renderProdutos();
-      form.reset();
-      return;
-    }
+          // se tudo falhar, apenas atualiza interface (não salva localmente)
+          produtos.unshift(payload);
+          renderProdutos();
+          form.reset();
     console.error('Erro ao adicionar via Apps Script', r.status);
   } catch (err) {
     console.error('Erro ao enviar add para Apps Script:', err);
