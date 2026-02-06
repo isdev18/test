@@ -120,33 +120,25 @@ function getCategoriaHonda(produto) {
 }
 
 // =============================
-// DADOS
+// DADOS (usando Google Sheets via Apps Script)
 // =============================
-const API_URL = 'http://localhost:5000/motos';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzK9VqA5SNt9Zavp2D2FkU3hAWNU928OdzR0k888FLFLrqNAsRapKUnaklmaYuVvobY/exec';
 let produtos = [];
 
 async function carregarProdutos() {
-  // Tenta carregar do banco de dados primeiro
   try {
-    const res = await fetch(API_URL);
-    const motosDB = await res.json();
-    
-    if (motosDB && motosDB.length > 0) {
-      produtos = motosDB;
-      console.log("[API] Motos carregadas do banco:", produtos.length);
+    const res = await fetch(APPS_SCRIPT_URL);
+    if (res.ok) {
+      const motosDB = await res.json();
+      produtos = Array.isArray(motosDB) ? motosDB : [];
+      console.log('[API] Motos carregadas do Google Sheets:', produtos.length);
     } else {
-      // Fallback para data.js se banco estiver vazio
-      if (Array.isArray(window.PRODUCTS)) {
-        produtos = window.PRODUCTS;
-        console.log("[FALLBACK] Usando data.js:", produtos.length);
-      }
+      console.error('[API] Erro ao carregar motos:', res.status);
+      produtos = [];
     }
   } catch (err) {
-    console.warn("[API] Erro ao conectar com backend, usando data.js:", err);
-    // Fallback para data.js
-    if (Array.isArray(window.PRODUCTS)) {
-      produtos = window.PRODUCTS;
-    }
+    console.error('[API] Erro ao conectar com Apps Script:', err);
+    produtos = [];
   }
 
   let lista = produtos;

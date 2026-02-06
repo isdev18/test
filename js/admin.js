@@ -1,6 +1,7 @@
 // admin.js - lógica do painel administrativo (integração com backend)
 
 let produtos = [];
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzK9VqA5SNt9Zavp2D2FkU3hAWNU928OdzR0k888FLFLrqNAsRapKUnaklmaYuVvobY/exec';
 
 function salvarProdutos() {
   try {
@@ -35,23 +36,22 @@ function renderProdutos() {
 }
 
 async function carregarProdutos() {
-  // tenta carregar do backend (/motos). Se falhar, usa localStorage como fallback.
+  // Carrega diretamente do Apps Script (Google Sheets)
   try {
-    const r = await fetch('/motos');
+    const r = await fetch(APPS_SCRIPT_URL);
     if (r.ok) {
       const data = await r.json();
-      // espera-se um array de objetos com ao menos {id, nome, preco, imagem, descricao, categoria}
       produtos = Array.isArray(data) ? data : [];
-      salvarProdutos();
       renderProdutos();
       return;
     }
-  } catch (e) {
-    // ignore e tenta fallback
+    console.error('Erro ao carregar motos do Apps Script', r.status);
+  } catch (err) {
+    console.error('Erro ao conectar com Apps Script:', err);
   }
 
-  // fallback localStorage
-  produtos = JSON.parse(localStorage.getItem('produtos')) || [];
+  // Se falhar, mostra mensagem vazia
+  produtos = [];
   renderProdutos();
 }
 
@@ -68,25 +68,24 @@ document.getElementById('addProductForm').addEventListener('submit', async funct
 
   // tenta enviar para backend; se falhar, salva localmente
   try {
-    const r = await fetch('/admin/add_moto', {
+    const r = await fetch(APPS_SCRIPT_URL + '?action=add', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(novo)
     });
     if (r.ok) {
       const resp = await r.json();
-      // se o backend retornar o objeto criado, usa-o; caso contrário, usa o que foi enviado
       produtos.unshift(resp && resp.id ? resp : novo);
-      salvarProdutos();
       renderProdutos();
       form.reset();
       return;
     }
+    console.error('Erro ao adicionar via Apps Script', r.status);
   } catch (err) {
-    // segue para fallback
+    console.error('Erro ao enviar add para Apps Script:', err);
   }
 
-  // fallback: local
+  // Fallback local apenas como último recurso
   produtos.unshift(novo);
   salvarProdutos();
   renderProdutos();
@@ -101,7 +100,7 @@ async function removerProduto(idx) {
   // tenta remover pelo backend se existir id
   if (produto && produto.id) {
     try {
-      const r = await fetch('/admin/delete_moto', {
+      const r = await fetch(APPS_SCRIPT_URL + '?action=delete', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({id: produto.id})
@@ -116,7 +115,7 @@ async function removerProduto(idx) {
         }
       }
     } catch (e) {
-      // fallback
+      console.error('Erro ao deletar via Apps Script', e);
     }
   }
 
