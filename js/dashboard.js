@@ -109,11 +109,8 @@ async function renderDashboard() {
 async function deletarMoto(id) {
   if (!confirm('Deseja deletar esta moto?')) return;
   try {
-    const r = await fetch(APPS_SCRIPT_URL + '?action=delete', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id })
-    });
+    // usar GET com query param para evitar preflight CORS no navegador
+    const r = await fetch(APPS_SCRIPT_URL + '?action=delete&id=' + encodeURIComponent(id));
     if (r.ok) {
       const resp = await r.json();
       if (resp && (resp.status === 'ok' || resp.status === 'deletado' || resp.status === 'deleted')) {

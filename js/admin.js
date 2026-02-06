@@ -100,11 +100,8 @@ async function removerProduto(idx) {
   // tenta remover pelo backend se existir id
   if (produto && produto.id) {
     try {
-      const r = await fetch(APPS_SCRIPT_URL + '?action=delete', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({id: produto.id})
-      });
+      // usar GET com query param para evitar CORS preflight
+      const r = await fetch(APPS_SCRIPT_URL + '?action=delete&id=' + encodeURIComponent(produto.id));
       if (r.ok) {
         const resp = await r.json();
         if (resp && (resp.status === 'ok' || resp.status === 'deletado' || resp.status === 'deleted')) {
