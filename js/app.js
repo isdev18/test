@@ -55,7 +55,7 @@ function atualizarModal(tipo) {
   if (tipo === "financiamento") {
     modalTitulo.textContent = "Financiamento";
     modalTexto.innerHTML =
-      "Aquisição imediata.<br><br><i>Sujeito à análise de crédito.</i>";
+      "Financiamento bancário  - parcelas fixas<br>Fácil aquisição<br><i>Sujeito a análise de crédito</i>";
   }
 }
 
@@ -84,11 +84,22 @@ function getCategoriaHonda(produto) {
     return produto.categoria;
   }
 
-  // Classificação automática baseada no nome da moto
   const nome = (produto.nome || "").toUpperCase();
 
-  // TOURING - motos de viagem
- 
+  // ADVENTURE - Tornado
+  if (nome.includes("TORNADO")) {
+    return "adventure";
+  }
+
+  // OFF ROAD - CRF e quadriciclo (TRX)
+  if (nome.includes("CRF") || nome.includes("TRX")) {
+    return "offroad";
+  }
+
+  // STREET - Bros agora é street
+  if (nome.includes("BROS")) {
+    return "street";
+  }
 
   // SPORT - motos esportivas
   if (nome.includes("CBR") || nome.includes("FIREBLADE")) {
@@ -101,8 +112,8 @@ function getCategoriaHonda(produto) {
     return "adventure";
   }
 
-  // OFF ROAD - motos de trilha
-  if (nome.includes("CRF") || nome.includes("XR") || nome.includes("TORNADO")) {
+  // OFF ROAD - motos de trilha (XR)
+  if (nome.includes("XR")) {
     return "offroad";
   }
 
@@ -110,7 +121,7 @@ function getCategoriaHonda(produto) {
   if (nome.includes("CG") || nome.includes("FAN") || nome.includes("TITAN") ||
       nome.includes("BIZ") || nome.includes("POP") || nome.includes("PCX") ||
       nome.includes("ELITE") || nome.includes("CB") || nome.includes("TWISTER") ||
-      nome.includes("HORNET") || nome.includes("BROS")) {
+      nome.includes("HORNET")) {
     return "street";
   }
 
@@ -199,32 +210,46 @@ function renderProducts(lista) {
       <button class="btn saiba-mais">Planos de Consórcio</button>
       <button class="btn financiamento">Simular financiamento</button>
       <div class="detalhes" style="display:none;">
-        <select class="select-consorcio">
-          <option value="">Selecione</option>
-          ${consorciosHTML}
-        </select>
-        <a class="btn whatsapp" target="_blank" style="display:none;">Falar no WhatsApp</a>
+        <div class="planos-consorcio">
+          ${(consList || []).map(c => `<button class="btn plano-consorcio" data-plano="${c.plano}" data-valor="${c.valor}">${c.plano} de R$ ${c.valor}</button>`).join('')}
+        </div>
+      </div>
+      <div class="detalhes" style="display:none; padding: 12px 0 0 0;">
+        <div class="planos-consorcio" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-start;">
+          ${(consList || []).map(c => `<button class="plano-consorcio" style="background:#f5f5f5;border:1px solid #d50000;color:#d50000;padding:10px 18px;border-radius:7px;font-weight:bold;cursor:pointer;transition:.2s;" data-plano="${c.plano}" data-valor="${c.valor}">${c.plano} de R$ ${c.valor}</button>`).join('')}
+        </div>
+      </div>
       </div>
     `;
 
     container.appendChild(card);
 
-    const detalhes = card.querySelector(".detalhes");
-    const select = card.querySelector(".select-consorcio");
-    const btnWhatsapp = card.querySelector(".whatsapp");
 
+    const detalhes = card.querySelector(".detalhes");
+    const planosBtns = card.querySelectorAll('.plano-consorcio');
+    // Toggle: ao clicar em "Planos de Consórcio", abre/fecha os planos
     card.querySelector(".saiba-mais").onclick = () => {
-      // Mostra/oculta os detalhes de consórcio diretamente no card
-      if (detalhes.style.display === 'none' || detalhes.style.display === '') {
+      if (detalhes.style.display === 'block') {
+        detalhes.style.display = 'none';
+        detalhesAtivos = null;
+      } else {
         detalhes.style.display = 'block';
-        // define estado para manter compatibilidade com modal/continuar
         motoSelecionada = prod.nome;
         origemAcao = 'consorcio';
         detalhesAtivos = detalhes;
-      } else {
-        detalhes.style.display = 'none';
       }
     };
+
+    // Ao clicar em um plano, já redireciona para o WhatsApp direto
+    planosBtns.forEach(btn => {
+      btn.onclick = () => {
+        const plano = btn.getAttribute('data-plano');
+        const valor = btn.getAttribute('data-valor');
+        const msg = `Olá! Tenho interesse na ${prod.nome}\nPlano: ${plano} de R$ ${valor}`;
+        const url = "https://wa.me/5575998646978?text=" + encodeURIComponent(msg);
+        window.open(url, '_blank');
+      };
+    });
 
     card.querySelector(".financiamento").onclick = () => {
       motoSelecionada = prod.nome;
@@ -233,12 +258,7 @@ function renderProducts(lista) {
       modal.style.display = "flex";
     };
 
-    select.onchange = () => {
-      if (!select.value) return;
-      const msg = `Olá! Tenho interesse na ${prod.nome}\nPlano: ${select.value}`;
-      btnWhatsapp.href = "https://wa.me/5575998646978?text=" + encodeURIComponent(msg);
-      btnWhatsapp.style.display = "block";
-    };
+    // ...remove select.onchange pois não existe mais select...
   });
 }
 

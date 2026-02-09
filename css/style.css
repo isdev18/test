@@ -1,3 +1,7 @@
+/* Espaçamento extra para botões dos planos de consórcio */
+.plano-consorcio {
+    margin: 8px 14px 8px 0 !important;
+}
 /* ============================
    TOGGLE DE TEMA - BOTÃO FLUTUANTE
 ============================= */
