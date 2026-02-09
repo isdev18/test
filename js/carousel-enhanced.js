@@ -24,7 +24,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     { filename: 'XRE.jpg', url: 'css/XRE.jpg' },
     { filename: 'fan.jpg', url: 'css/fan.jpg' },
     { filename: 'bros.jpg', url: 'css/bros.jpg' },
-    { filename: 'pcx.png', url: 'static/carrossel/pcx.png' },
     { filename: 'twister.jpg', url: 'css/twister.jpg' }
   ];
 
