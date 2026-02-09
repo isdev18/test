@@ -88,9 +88,7 @@ function getCategoriaHonda(produto) {
   const nome = (produto.nome || "").toUpperCase();
 
   // TOURING - motos de viagem
-  if (nome.includes("GL") || nome.includes("GOLD WING")) {
-    return "touring";
-  }
+ 
 
   // SPORT - motos esportivas
   if (nome.includes("CBR") || nome.includes("FIREBLADE")) {
@@ -171,7 +169,25 @@ function renderProducts(lista) {
     const card = document.createElement("div");
     card.className = "card";
 
-    const consorciosHTML = (prod.consorcios || [])
+    // Compatibilidade: aceita `prod.consorcios` (array) ou campos planos/valor_flat (plano_1..valor_1)
+    let consList = [];
+    if (Array.isArray(prod.consorcios) && prod.consorcios.length) {
+      consList = prod.consorcios;
+    } else {
+      // Reconstruir a lista a partir de plano_1..plano_7 e valor_1..valor_7
+      for (let i = 1; i <= 7; i++) {
+        const planoKey = `plano_${i}`;
+        const valorKey = `valor_${i}`;
+        const planoVal = prod[planoKey];
+        const valorVal = prod[valorKey];
+        if (planoVal && (valorVal !== undefined && valorVal !== null && valorVal !== "")) {
+          const valorStr = typeof valorVal === 'number' ? String(valorVal).replace('.', ',') : String(valorVal);
+          consList.push({ plano: planoVal, valor: valorStr });
+        }
+      }
+    }
+
+    const consorciosHTML = (consList || [])
       .map(c => `<option value="${c.plano} - R$ ${c.valor}">${c.plano} de R$ ${c.valor}</option>`)
       .join("");
 
@@ -198,11 +214,16 @@ function renderProducts(lista) {
     const btnWhatsapp = card.querySelector(".whatsapp");
 
     card.querySelector(".saiba-mais").onclick = () => {
-      motoSelecionada = prod.nome;
-      origemAcao = "consorcio";
-      detalhesAtivos = detalhes;
-      atualizarModal("consorcio");
-      modal.style.display = "flex";
+      // Mostra/oculta os detalhes de consórcio diretamente no card
+      if (detalhes.style.display === 'none' || detalhes.style.display === '') {
+        detalhes.style.display = 'block';
+        // define estado para manter compatibilidade com modal/continuar
+        motoSelecionada = prod.nome;
+        origemAcao = 'consorcio';
+        detalhesAtivos = detalhes;
+      } else {
+        detalhes.style.display = 'none';
+      }
     };
 
     card.querySelector(".financiamento").onclick = () => {
@@ -507,22 +528,8 @@ function adicionarBotaoVoltar() {
   btn.href = 'index.html';
   btn.className = 'btn-voltar-fixo';
   btn.innerHTML = '← Voltar';
-  btn.style.cssText = `
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    background: #d00000;
-    color: white;
-    padding: 12px 20px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: bold;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    z-index: 9999;
-    transition: transform 0.2s, background 0.2s;
-  `;
-  btn.onmouseenter = () => btn.style.background = '#b00000';
-  btn.onmouseleave = () => btn.style.background = '#d00000';
+  // estilização via CSS para respeito ao tema (usa variáveis CSS)
+  btn.classList.add('btn-voltar-fixo');
   
   document.body.appendChild(btn);
 }

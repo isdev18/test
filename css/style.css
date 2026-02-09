@@ -1,6 +1,7 @@
 /* ============================
    TOGGLE DE TEMA - BOTÃO FLUTUANTE
 ============================= */
+@import url("dark-mode.css");
 .theme-toggle-btn {
     position: fixed;
     bottom: 20px;
@@ -533,6 +534,47 @@ body.dark-theme .theme-toggle-btn:hover {
 
 .carousel-wrapper {
     background: transparent !important;
+}
+
+/* Slots vazios do carrossel - utiliza variáveis de tema */
+.carrossel-slot {
+    display: inline-block;
+    width: 160px;
+    height: 110px;
+    margin: 0 8px 8px 0;
+    border-radius: 8px;
+    border: 2px dashed var(--accent);
+    vertical-align: top;
+    background: var(--accent-light);
+    box-sizing: border-box;
+}
+
+.empty-slot-text {
+    color: var(--accent) !important;
+    text-align: center;
+    line-height: 110px;
+    font-weight: 700;
+}
+
+/* Botão fixo de voltar - usa variáveis para respeitar tema */
+.btn-voltar-fixo {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: var(--accent);
+    color: var(--footer-text);
+    padding: 12px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    z-index: 9999;
+    transition: transform 0.2s, background 0.2s;
+}
+
+.btn-voltar-fixo:hover {
+    background: var(--accent-hover);
+    transform: translateY(-3px);
 }
 
 /* ============================
@@ -1196,6 +1238,12 @@ header {
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     padding: 20px;
     gap: 20px;
+}
+
+/* Corrige fundo claro atrás dos cards: aplica dark apenas no container .grid quando tema escuro estiver ativo */
+body.dark-theme .grid,
+body[data-theme="dark"] .grid {
+    background: #0d0d0d !important;
 }
 
 .card {

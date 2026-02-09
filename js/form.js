@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!form) return;
 
     form.addEventListener("submit", function (e) {
-        e.preventDefault(); // Não carrega a pag
+        e.preventDefault(); 
 
         const nome = document.getElementById("nome").value;
         const cpf = document.getElementById("cpf").value;

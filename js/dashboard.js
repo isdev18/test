@@ -34,15 +34,8 @@ async function listarImagensCarrossel() {
   const espacosVazios = MAX_SLOTS - imagens.length;
   for (let i = 0; i < espacosVazios; i++) {
     const slot = document.createElement('div');
-    slot.style.display = 'inline-block';
-    slot.style.width = '160px';
-    slot.style.height = '110px';
-    slot.style.margin = '0 8px 8px 0';
-    slot.style.border = '2px dashed #d00000';
-    slot.style.borderRadius = '8px';
-    slot.style.background = '#fff6f6';
-    slot.style.verticalAlign = 'top';
-    slot.innerHTML = '<div style="color:#d00000;text-align:center;line-height:110px;font-weight:700;">Vazio</div>';
+    slot.className = 'carrossel-slot empty-slot';
+    slot.innerHTML = '<div class="empty-slot-text">Vazio</div>';
     container.appendChild(slot);
   }
   if (!imagens.length) {

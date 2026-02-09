@@ -31,7 +31,8 @@
         if (saved) {
             return saved;
         }
-        return getSystemPreference();
+        // Por padrão, usar tema escuro para que o site carregue todo escuro
+        return 'dark';
     }
 
     /**
@@ -145,6 +146,11 @@
         // Aplica o tema inicial o mais rápido possível para evitar flash
         const theme = getSavedTheme();
         applyTheme(theme);
+
+        // Persiste a preferência padrão se ainda não existir (evita flash em visitas seguintes)
+        if (!localStorage.getItem(THEME_KEY)) {
+            saveTheme(theme);
+        }
 
         // Quando o DOM estiver pronto, cria o botão
         if (document.readyState === 'loading') {
